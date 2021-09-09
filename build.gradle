@@ -17,7 +17,7 @@ publishing {
     publications {
         gpr(MavenPublication) {
             group 'de.noisruker'
-            version '1.0.0'
+            version '1.0.1'
             artifactId 'event-manager'
 
             from(components.java)
