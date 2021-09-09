@@ -19,24 +19,50 @@
 
 package de.noisruker.event.events;
 
+/**
+ * This class represent an event.
+ */
 public abstract class Event {
 
+    /**
+     * The events name
+     */
     private final String name;
+    /**
+     * The events result
+     */
     private Object result;
 
+    /**
+     * Creates a new Event with the secified name. To trigger the event use {@link de.noisruker.event.EventManager#triggerEvent(Event)} with this event as parameter.
+     * If you expect an output the triggerEvent Method will return it for you after handling all listeners for this event.
+     *
+     * @param name The events name
+     */
     protected Event(String name) {
         this.name = name;
         this.result = null;
     }
 
+    /**
+     * @return The events name
+     */
     public String getEventName() {
         return this.name;
     }
 
+    /**
+     * Sets the result of this event, which will later on be returned to the events source. By default, this is {@code null}. Please ensure before editing to include this in the calculation for the output value if this is not {@code null}.
+     *
+     * @param result The result to set for this event
+     */
     public void setResult(Object result) {
         this.result = result;
     }
 
+    /**
+     * @return The events result
+     */
     public Object getResult() {
         return this.result;
     }

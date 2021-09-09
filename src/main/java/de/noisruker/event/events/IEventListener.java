@@ -20,16 +20,17 @@
 package de.noisruker.event.events;
 
 /**
- * Stellt einen Event zuhörer dar, der auf das Event {@link T} wartet.
+ * This is an event listener, waiting to the event {@link T} to be triggered.
  *
- * @param <T> Die Event-klasse auf die der Zuhörer wartet
+ * @param <T> The class this listener is listening for
+ * @implNote To register your IEventListener use {@link de.noisruker.event.EventManager#registerEventListener(Class, IEventListener)}
  */
 public interface IEventListener<T extends Event> {
 
     /**
-     * Diese Methode wird nach Registrierung immer dann ausgeführt, wenn das angegebene Event ausgelöst wird.
+     * This is the called method when the listened event was triggert
      *
-     * @param event Das Event, das ausgelöst wurde
+     * @param event The triggert event
      */
     public void listen(T event);
 
