@@ -1,2 +1,2 @@
-# EventManager [![Gradle Package](https://github.com/juhu1705/EventManager/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/juhu1705/EventManager/actions/workflows/gradle-publish.yml)
-A little EventManager in Java
+# EventManager [![CodeQL](https://github.com/juhu1705/EventManager/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/juhu1705/EventManager/actions/workflows/codeql-analysis.yml) [![Gradle Package](https://github.com/juhu1705/EventManager/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/juhu1705/EventManager/actions/workflows/gradle-publish.yml)
+A little EventManager for Java
