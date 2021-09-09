@@ -21,6 +21,8 @@ package de.noisruker.event.events;
 
 /**
  * This class represent an event.
+ *
+ * @author Fabius Mettner
  */
 public abstract class Event {
 
@@ -34,7 +36,7 @@ public abstract class Event {
     private Object result;
 
     /**
-     * Creates a new Event with the secified name. To trigger the event use {@link de.noisruker.event.EventManager#triggerEvent(Event)} with this event as parameter.
+     * Creates a new Event with the specified name. To trigger the event use {@link de.noisruker.event.EventManager#triggerEvent(Event)} with this event as parameter.
      * If you expect an output the triggerEvent Method will return it for you after handling all listeners for this event.
      *
      * @param name The events name

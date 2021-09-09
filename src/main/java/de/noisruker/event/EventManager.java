@@ -45,6 +45,7 @@ import java.util.List;
  * </p>
  *
  * @implNote Note that an event was <strong>not</strong> called in an own thread. This method will wait until all listeners are called before returning the result
+ * @author Fabius Mettner
  */
 public class EventManager {
 

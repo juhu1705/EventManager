@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * This @interface declares the following method as an EventListener method, which means that this method will be fired when the first parameters' event occurs.
  *
  * @implNote To register the class of this method use {@link de.noisruker.event.EventManager#registerEventListeners(Class, Object)}.
+ * @author Fabius Mettner
  */
 @Retention(RUNTIME)
 @Target(METHOD)
