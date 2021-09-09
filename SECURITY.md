@@ -8,10 +8,10 @@
 
 ## Reporting a Vulnerability
 
-To report vulnerabilities please create an Issue in this repository.
+To report vulnerabilities please send me an email to fabius1705@live.de.
 
-Please use the template to report a bug and descripe the vulnerability as detailed as you can. 
-I will look up the issue when I have time next. It could be that I have further questions, so please look up one time a week.
+Please descripe the vulnerability as detailed as you can. And leave a description on how to recreate if possible
+I will look up the mail when I have time next. It could be that I have further questions, so to ensure that I can understand the issue you can leave me a contact possability.
 As this is only a hobby project I cannot savely secure that I can update this security issue, but I try my very best.
 If I accept the vulnerability I am on the way to fix it.
 
