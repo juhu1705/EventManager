@@ -1,4 +1,4 @@
-module EventManager.main {
+module de.noisruker.event {
     requires java.base;
 
     exports de.noisruker.event;
