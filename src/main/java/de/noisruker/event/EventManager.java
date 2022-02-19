@@ -141,6 +141,7 @@ public class EventManager {
      * @param listener The listener to remove
      * @param <eventClass> The Event class
      */
+    @SuppressWarnings("unused")
     public <eventClass extends Event<?>> void removeEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
         if(this.containsKey(eventClassO))
             this.get(eventClassO).remove(listener);
@@ -150,8 +151,9 @@ public class EventManager {
      * Triggers an event
      *
      * @param event The event to trigger
+     * @param <T> Return type of the Event
      * @param <eventClass> The events class
-     * @return The events result or {@code null} if the event has no result.
+     * @return The events result or {@code null} if the event has no result set.
      */
     public <T, eventClass extends Event<T>> T triggerEvent(final eventClass event) {
         if(event == null)
@@ -163,6 +165,15 @@ public class EventManager {
         return event.getResult();
     }
 
+    /**
+     * Triggers an event on an async thread in the future. After the event is handled the given resultManager is called to handle the events output.
+     *
+     * @param event The event to trigger
+     * @param resultManager The result manager instance to handle the events return
+     * @param <T> The events return type
+     * @param <eventClass> The events class
+     */
+    @SuppressWarnings("unused")
     public <T, eventClass extends Event<T>>void triggerEventAsync(final eventClass event, final IEventResultManager<T> resultManager) {
         ThreadManager.getInstance().executeAsync(() -> resultManager.handle(this.triggerEvent(event)));
     }
@@ -236,13 +247,23 @@ public class EventManager {
             this.listeners = new ArrayList<>();
         }
 
+        /**
+         * If this EventListener instance is listening to the given events object.
+         *
+         * @param event The event to check listening for
+         * @return If the event object is an instance of the EventListenerHolders event class
+         */
         public boolean isListeningTo(Event<?> event) {
             return eventsClass.isInstance(event);
         }
 
+        /**
+         * Checks whether this EventListenerHolder is listening to the given event object and calls the listeners if it is so.
+         * @param event The triggered event to call the EventListeners for
+         */
         public void callListener(final Event<?> event) {
             if(this.isListeningTo(event)) {
-                this.listeners.forEach(l -> l.listen((T) event));
+                this.listeners.forEach(l -> l.listen(eventsClass.cast(event)));
             }
         }
 
@@ -258,6 +279,7 @@ public class EventManager {
         /**
          * @return A list of all Listeners listen to the {@link EventListenerHolder#eventsClass event} of the listener
          */
+        @SuppressWarnings("unused")
         public List<IEventListener<T>> getListeners() {
             return this.listeners;
         }

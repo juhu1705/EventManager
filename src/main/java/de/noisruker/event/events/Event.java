@@ -49,6 +49,7 @@ public abstract class Event<T> {
     /**
      * @return The events name
      */
+    @SuppressWarnings("unused")
     public String getEventName() {
         return this.name;
     }
