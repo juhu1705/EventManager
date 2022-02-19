@@ -22,6 +22,8 @@ package de.noisruker.event;
 import de.noisruker.event.events.Event;
 import de.noisruker.event.events.EventListener;
 import de.noisruker.event.events.IEventListener;
+import de.noisruker.event.events.IEventResultManager;
+import de.noisruker.threading.ThreadManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -57,6 +59,7 @@ public class EventManager {
     /**
      * @return The {@link EventManager#instance main instance} of the {@link EventManager}.
      */
+    @SuppressWarnings("unused")
     public static EventManager getInstance() {
         return instance;
     }
@@ -64,7 +67,7 @@ public class EventManager {
     /**
      * A list of all known {@link EventListenerHolder}.
      */
-    private final ArrayList<EventListenerHolder<? extends Event>> listeners;
+    private final ArrayList<EventListenerHolder<? extends Event<?>>> listeners;
 
     /**
      * Creates an {@link EventManager}.
@@ -79,10 +82,10 @@ public class EventManager {
      * Registers all event listening Methods of a class. All those Methods must annotate the {@link EventListener} @interface.
      * @param <eventClass> The events class. Your class and the classObject if not null should extend this same class.
      * @param c The class containing all the event listeners
-     * @param classObject An instance of the class or {@code null}, if all methods are public static
+     * @param classObject An instance of the class or {@code null}, if all methods are public and static
      * @implNote Please consider your methods are accessible by the classObject. If they are not an error will be thrown, and you will not receive any event
      */
-    public <eventClass extends Object>void registerEventListeners(Class<eventClass> c, final eventClass classObject) {
+    public <eventClass>void registerEventListeners(Class<eventClass> c, final eventClass classObject) {
         // Checks if a class is given and then checks all declared Methods of this class
         if(c == null)
             return;
@@ -103,7 +106,7 @@ public class EventManager {
                 // Checks if the EventParameters are valid
                 Parameter[] params = m.getParameters();
                 if(params.length == 1 && Event.class.isAssignableFrom(params[0].getType())) {
-                    Class<? extends Event> eventClass = (Class<? extends Event>) params[0].getType();
+                    Class<? extends Event<?>> eventClass = (Class<? extends Event<?>>) params[0].getType();
 
                     // Register the event for this method
                     this.put(eventClass, event -> {
@@ -127,7 +130,7 @@ public class EventManager {
      * @param listener The listener to call on event trigger (The listener that will be called when an event with the events class is triggered)
      * @param <eventClass> The events class
      */
-    public <eventClass extends Event> void registerEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
+    public <eventClass extends Event<?>> void registerEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
         this.put(eventClassO, listener);
     }
 
@@ -138,7 +141,7 @@ public class EventManager {
      * @param listener The listener to remove
      * @param <eventClass> The Event class
      */
-    public <eventClass extends Event> void removeEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
+    public <eventClass extends Event<?>> void removeEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
         if(this.containsKey(eventClassO))
             this.get(eventClassO).remove(listener);
     }
@@ -150,16 +153,18 @@ public class EventManager {
      * @param <eventClass> The events class
      * @return The events result or {@code null} if the event has no result.
      */
-    public <eventClass extends Event> Object triggerEvent(final eventClass event) {
+    public <T, eventClass extends Event<T>> T triggerEvent(final eventClass event) {
         if(event == null)
             return null;
-        if(this.containsKey(event.getClass())) {
-            for(IEventListener<eventClass> listener: this.<eventClass>get((Class<? extends eventClass>) event.getClass()).getListeners()) {
-                listener.listen(event);
-            }
-        }
+
+        this.listeners.forEach(l -> l.callListener(event));
+
 
         return event.getResult();
+    }
+
+    public <T, eventClass extends Event<T>>void triggerEventAsync(final eventClass event, final IEventResultManager<T> resultManager) {
+        ThreadManager.getInstance().executeAsync(() -> resultManager.handle(this.triggerEvent(event)));
     }
 
     /**
@@ -169,8 +174,8 @@ public class EventManager {
      * @param <eventClass> The class of the key
      * @return If the event class is contained in the event managers events
      */
-    private <eventClass extends Event> boolean containsKey(Class<? extends eventClass> key) {
-        for (EventListenerHolder<? extends Event> holder: this.listeners) {
+    private <eventClass extends Event<?>> boolean containsKey(Class<? extends eventClass> key) {
+        for (EventListenerHolder<? extends Event<?>> holder: this.listeners) {
             if(holder.eventsClass.equals(key))
                 return true;
         }
@@ -184,8 +189,8 @@ public class EventManager {
      * @param <eventClass> The class
      * @return The {@link EventListenerHolder} for the given event
      */
-    private <eventClass extends Event> EventListenerHolder<eventClass> get(Class<? extends eventClass> eventClass) {
-        for (EventListenerHolder<? extends Event> holder: this.listeners) {
+    private <eventClass extends Event<?>> EventListenerHolder<eventClass> get(Class<? extends eventClass> eventClass) {
+        for (EventListenerHolder<? extends Event<?>> holder: this.listeners) {
             if(holder.eventsClass.equals(eventClass))
                 return (EventListenerHolder<eventClass>) holder;
         }
@@ -201,7 +206,7 @@ public class EventManager {
      * @param listener The listener for the event
      * @param <eventClass> The class the listener must handle and the eventClass must extend
      */
-    private <eventClass extends Event> void put(Class<? extends eventClass> eventClass, IEventListener<eventClass> listener) {
+    private <eventClass extends Event<?>> void put(Class<? extends eventClass> eventClass, IEventListener<eventClass> listener) {
         EventListenerHolder<eventClass> holder = this.get(eventClass);
         holder.addListener(listener);
     }
@@ -210,7 +215,7 @@ public class EventManager {
      * The event listener holder is used to hold the list of {@link IEventListener}s for the Specific events class
      * @param <T> The class of the Event, for which the holder holds listeners
      */
-    private static class EventListenerHolder<T extends Event> {
+    private static class EventListenerHolder<T extends Event<?>> {
 
         /**
          * The event Class that the holder holds listener for
@@ -229,6 +234,16 @@ public class EventManager {
         EventListenerHolder(Class<T> eventsClass) {
             this.eventsClass = eventsClass;
             this.listeners = new ArrayList<>();
+        }
+
+        public boolean isListeningTo(Event<?> event) {
+            return eventsClass.isInstance(event);
+        }
+
+        public void callListener(final Event<?> event) {
+            if(this.isListeningTo(event)) {
+                this.listeners.forEach(l -> l.listen((T) event));
+            }
         }
 
         /**
@@ -252,7 +267,7 @@ public class EventManager {
          *
          * @param listener The listener to remove
          */
-        public void remove(IEventListener<? extends Event> listener) {
+        public void remove(IEventListener<? extends Event<?>> listener) {
             this.listeners.remove(listener);
         }
     }

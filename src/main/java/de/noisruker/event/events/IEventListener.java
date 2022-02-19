@@ -7,13 +7,13 @@ package de.noisruker.event.events;
  * @implNote To register your IEventListener use {@link de.noisruker.event.EventManager#registerEventListener(Class, IEventListener)}
  * @author Fabius Mettner
  */
-public interface IEventListener<T extends Event> {
+public interface IEventListener<T extends Event<?>> {
 
     /**
      * This is the called method when the listened event was triggert
      *
      * @param event The triggert event
      */
-    public void listen(T event);
+    void listen(T event);
 
 }

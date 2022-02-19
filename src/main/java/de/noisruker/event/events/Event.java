@@ -24,7 +24,7 @@ package de.noisruker.event.events;
  *
  * @author Fabius Mettner
  */
-public abstract class Event {
+public abstract class Event<T> {
 
     /**
      * The events name
@@ -33,7 +33,7 @@ public abstract class Event {
     /**
      * The events result
      */
-    private Object result;
+    private T result;
 
     /**
      * Creates a new Event with the specified name. To trigger the event use {@link de.noisruker.event.EventManager#triggerEvent(Event)} with this event as parameter.
@@ -58,14 +58,14 @@ public abstract class Event {
      *
      * @param result The result to set for this event
      */
-    public void setResult(Object result) {
+    public void setResult(T result) {
         this.result = result;
     }
 
     /**
      * @return The events result
      */
-    public Object getResult() {
+    public T getResult() {
         return this.result;
     }
 }
