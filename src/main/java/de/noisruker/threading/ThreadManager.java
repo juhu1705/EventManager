@@ -1,3 +1,22 @@
+/*
+ Event Manager
+ ThreadManager.java
+ Copyright © 2021  Fabius Mettner (Team Noisruker)
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.noisruker.threading;
 
 import de.noisruker.event.EventManager;
@@ -56,6 +75,7 @@ public class ThreadManager {
 
     /**
      * Calls {@link ThreadPoolExecutor#execute(Runnable)} on the current thread pool
+     * @param r The task to execute async
      */
     public void executeAsync(Runnable r) {
         executor.execute(r);
@@ -63,6 +83,9 @@ public class ThreadManager {
 
     /**
      * Calls {@link ThreadPoolExecutor#submit(Callable)} on the current thread pool
+     * @param <T> The return type of the executed task
+     * @param c The task to execute
+     * @return A future holding the result of this task when available
      */
     @SuppressWarnings("unused")
     public <T> Future<T> executeAsyncAndReturn(Callable<T> c) {

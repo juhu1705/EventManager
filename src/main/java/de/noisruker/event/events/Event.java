@@ -21,8 +21,6 @@ package de.noisruker.event.events;
 
 /**
  * This class represent an event.
- *
- * @author Fabius Mettner
  */
 public abstract class Event<T> {
 

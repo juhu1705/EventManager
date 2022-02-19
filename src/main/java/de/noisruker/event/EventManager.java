@@ -33,21 +33,17 @@ import java.util.List;
 
 /**
  * This class is used for handling all event managing.
- * <p>
+ * <br>
  *     To listen to an event you can choose one of the following options:
  *     <ul>
  *         <li>Register an {@link IEventListener event listener} to a class via the {@link EventManager#registerEventListener(Class, IEventListener)} method.</li>
  *         <li>Register a class as a event ManagerClass via the {@link EventManager#registerEventListeners(Class, Object)} method.</li>
  *     </ul>
  *     Every time an event of the registered Class is fired the EventManager calls the Method.
- * </p>
+ * <br>
  *
  * <p>
- *     To trigger an event you just call {@link EventManager#triggerEvent(Event)} with the event you want to fire. The method returns the output of the event.
- * </p>
- *
- * @implNote Note that an event was <strong>not</strong> called in an own thread. This method will wait until all listeners are called before returning the result
- * @author Fabius Mettner
+ *     To trigger an event you just call {@link EventManager#triggerEvent(Event)} or {@link EventManager#triggerEventAsync(Event, IEventResultManager)} for async event handling, with the event you want to fire. The method returns the output of the event or give it to the {@link IEventResultManager} if it is triggered async.
  */
 public class EventManager {
 
@@ -71,8 +67,9 @@ public class EventManager {
 
     /**
      * Creates an {@link EventManager}.
-     * @implNote This method should only be called once while initializing the {@link EventManager#instance}.
-     *           Please use {@link EventManager#getInstance()} to get the current active instance of this class.
+     * <p>
+     * Note: This method should only be called once while initializing the {@link EventManager#instance}.
+     * Please use {@link EventManager#getInstance()} to get the current active instance of this class.
      */
     protected EventManager() {
         this.listeners = new ArrayList<>();
@@ -80,10 +77,10 @@ public class EventManager {
 
     /**
      * Registers all event listening Methods of a class. All those Methods must annotate the {@link EventListener} @interface.
+     * Please consider your methods are accessible by the classObject. If they are not an error will be thrown, and you will not receive any event
      * @param <eventClass> The events class. Your class and the classObject if not null should extend this same class.
      * @param c The class containing all the event listeners
      * @param classObject An instance of the class or {@code null}, if all methods are public and static
-     * @implNote Please consider your methods are accessible by the classObject. If they are not an error will be thrown, and you will not receive any event
      */
     public <eventClass>void registerEventListeners(Class<eventClass> c, final eventClass classObject) {
         // Checks if a class is given and then checks all declared Methods of this class
