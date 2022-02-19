@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'signing'
 }
 
 group 'de.noisruker'
@@ -67,10 +66,6 @@ dependencies {
 
 test {
     useJUnitPlatform()
-}
-
-signing {
-    sign publishing.publications.mavenJava
 }
 
 javadoc {
