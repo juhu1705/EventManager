@@ -127,7 +127,7 @@ public class EventManager {
      * @param listener The listener to call on event trigger (The listener that will be called when an event with the events class is triggered)
      * @param <eventClass> The events class
      */
-    public <eventClass extends Event<?>> void registerEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
+    public <eventClass extends Event> void registerEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
         this.put(eventClassO, listener);
     }
 
@@ -139,9 +139,9 @@ public class EventManager {
      * @param <eventClass> The Event class
      */
     @SuppressWarnings("unused")
-    public <eventClass extends Event<?>> void removeEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
+    public <eventClass extends Event> void removeEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
         if(this.containsKey(eventClassO))
-            this.get(eventClassO).remove(listener);
+            this.get(eventClassO).remove((IEventListener<? extends Event<?>>) listener);
     }
 
     /**

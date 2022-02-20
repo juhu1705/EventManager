@@ -7,7 +7,7 @@ package de.noisruker.event.events;
  *
  * @param <T> The class this listener is listening for
  */
-public interface IEventListener<T extends Event<?>> {
+public interface IEventListener<T extends Event> {
 
     /**
      * This is the called method when the listened event was triggert
