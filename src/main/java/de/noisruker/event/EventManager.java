@@ -127,7 +127,7 @@ public class EventManager {
      * @param listener The listener to call on event trigger (The listener that will be called when an event with the events class is triggered)
      * @param <eventClass> The events class
      */
-    public <eventClass extends Event> void registerEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
+    public synchronized <eventClass extends Event> void registerEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
         this.put(eventClassO, listener);
     }
 
@@ -139,7 +139,7 @@ public class EventManager {
      * @param <eventClass> The Event class
      */
     @SuppressWarnings("unused")
-    public <eventClass extends Event> void removeEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
+    public synchronized <eventClass extends Event> void removeEventListener(Class<? extends eventClass> eventClassO, IEventListener<eventClass> listener) {
         if(this.containsKey(eventClassO))
             this.get(eventClassO).remove((IEventListener<? extends Event<?>>) listener);
     }
@@ -156,8 +156,8 @@ public class EventManager {
         if(event == null)
             return null;
 
-        this.listeners.forEach(l -> l.callListener(event));
-
+        for(EventListenerHolder<?> l: this.listeners)
+            l.callListener(event);
 
         return event.getResult();
     }
@@ -260,7 +260,8 @@ public class EventManager {
          */
         public void callListener(final Event<?> event) {
             if(this.isListeningTo(event)) {
-                this.listeners.forEach(l -> l.listen(eventsClass.cast(event)));
+                for(IEventListener<T> l: this.listeners)
+                    l.listen(eventsClass.cast(event));
             }
         }
 
@@ -269,7 +270,7 @@ public class EventManager {
          *
          * @param eventListener The listener to add
          */
-        public void addListener(IEventListener<T> eventListener) {
+        public synchronized void addListener(IEventListener<T> eventListener) {
             this.listeners.add(eventListener);
         }
 
@@ -286,7 +287,7 @@ public class EventManager {
          *
          * @param listener The listener to remove
          */
-        public void remove(IEventListener<? extends Event<?>> listener) {
+        public synchronized void remove(IEventListener<? extends Event<?>> listener) {
             this.listeners.remove(listener);
         }
     }
