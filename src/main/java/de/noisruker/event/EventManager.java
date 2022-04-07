@@ -82,7 +82,7 @@ public class EventManager {
      * @param c The class containing all the event listeners
      * @param classObject An instance of the class or {@code null}, if all methods are public and static
      */
-    public <eventClass>void registerEventListeners(Class<eventClass> c, final eventClass classObject) {
+    public synchronized <eventClass>void registerEventListeners(Class<eventClass> c, final eventClass classObject) {
         // Checks if a class is given and then checks all declared Methods of this class
         if(c == null)
             return;
@@ -152,7 +152,7 @@ public class EventManager {
      * @param <eventClass> The events class
      * @return The events result or {@code null} if the event has no result set.
      */
-    public <T, eventClass extends Event<T>> T triggerEvent(final eventClass event) {
+    public synchronized <T, eventClass extends Event<T>> T triggerEvent(final eventClass event) {
         if(event == null)
             return null;
 
@@ -182,7 +182,7 @@ public class EventManager {
      * @param <eventClass> The class of the key
      * @return If the event class is contained in the event managers events
      */
-    private <eventClass extends Event<?>> boolean containsKey(Class<? extends eventClass> key) {
+    private synchronized <eventClass extends Event<?>> boolean containsKey(Class<? extends eventClass> key) {
         for (EventListenerHolder<? extends Event<?>> holder: this.listeners) {
             if(holder.eventsClass.equals(key))
                 return true;
@@ -197,7 +197,7 @@ public class EventManager {
      * @param <eventClass> The class
      * @return The {@link EventListenerHolder} for the given event
      */
-    private <eventClass extends Event<?>> EventListenerHolder<eventClass> get(Class<? extends eventClass> eventClass) {
+    private synchronized <eventClass extends Event<?>> EventListenerHolder<eventClass> get(Class<? extends eventClass> eventClass) {
         for (EventListenerHolder<? extends Event<?>> holder: this.listeners) {
             if(holder.eventsClass.equals(eventClass))
                 return (EventListenerHolder<eventClass>) holder;
@@ -214,7 +214,7 @@ public class EventManager {
      * @param listener The listener for the event
      * @param <eventClass> The class the listener must handle and the eventClass must extend
      */
-    private <eventClass extends Event<?>> void put(Class<? extends eventClass> eventClass, IEventListener<eventClass> listener) {
+    private synchronized <eventClass extends Event<?>> void put(Class<? extends eventClass> eventClass, IEventListener<eventClass> listener) {
         EventListenerHolder<eventClass> holder = this.get(eventClass);
         holder.addListener(listener);
     }
@@ -250,7 +250,7 @@ public class EventManager {
          * @param event The event to check listening for
          * @return If the event object is an instance of the EventListenerHolders event class
          */
-        public boolean isListeningTo(Event<?> event) {
+        public synchronized boolean isListeningTo(Event<?> event) {
             return eventsClass.isInstance(event);
         }
 
@@ -258,7 +258,7 @@ public class EventManager {
          * Checks whether this EventListenerHolder is listening to the given event object and calls the listeners if it is so.
          * @param event The triggered event to call the EventListeners for
          */
-        public void callListener(final Event<?> event) {
+        public synchronized void callListener(final Event<?> event) {
             if(this.isListeningTo(event)) {
                 for(IEventListener<T> l: this.listeners)
                     l.listen(eventsClass.cast(event));
