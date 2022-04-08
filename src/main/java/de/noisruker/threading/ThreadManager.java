@@ -23,7 +23,6 @@ import de.noisruker.event.EventManager;
 import de.noisruker.threading.events.TickInterruptedEvent;
 import de.noisruker.threading.events.TickerStoppedEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -62,7 +61,7 @@ public class ThreadManager {
      */
     private ThreadManager() {
         this.executor = new ThreadPoolExecutor(3, 10, 1, TimeUnit.SECONDS, new ArrayBlockingQueue<>(50));
-        this.continuosTasks = new ArrayList<>();
+        this.continuosTasks = new CopyOnWriteArrayList<>();
     }
 
     /**
